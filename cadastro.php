@@ -5,21 +5,31 @@
         exit();
     }
 
-    $nome = mysqli_real_escape_string($conn, $_POST['nome']);
-    $nick = mysqli_real_escape_string($conn, $_POST['nick']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $senha = mysqli_real_escape_string($conn, $_POST['senha']);
+    $nome = $_POST['nome'];
+    $nick = $_POST['nick'];
+    $email = $_POST['email'];
+    $senha = $_POST['senha'];
 
-    $sql = "INSERT INTO `usuario`(`nome`, `nomeusuario`, `email`, `senha`) VALUES('".$nome."','".$nick."','".$email."','".md5($senha)."')";
+    $cmd = $pdo->prepare("INSERT INTO usuario(nome, nomeusuario, email, senha) VALUES (:n, :nu, :e, :s)");
 
-    if ($conn->query($sql) === TRUE) {
+    $cmd->bindparam(":n",$nome);
+    $cmd->bindparam(":nu",$nick);
+    $cmd->bindparam(":e",$email);
+    $cmd->bindValue(":s",md5($senha));
+
+    $cmd1 = $pdo->prepare("SELECT nome FROM usuario WHERE nomeusuario = :nu or email = :e");
+
+    $cmd1->bindparam(":nu", $nick);
+    $cmd1->bindparam(":e",$email);
+    $cmd1->execute();
+
+    if($cmd1->rowCount() == 0){
+        $cmd->execute();
         header("Location: login.html");
-    } else {
-        echo "Erro: " . $sql . "<br>" . $conn->error;
+    }else{
+        echo "Usuário já cadastrado."."<br>";
         ?>
-        <button><a href="cadastro.html">Voltar</a></button>
+            <button><a href="cadastro.html">Voltar</a></button>
         <?php
     }
-
-    $conn->close();
 ?>

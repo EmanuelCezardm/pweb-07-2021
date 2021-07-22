@@ -1,16 +1,29 @@
 <?php
     include('server.php');
-    $sql = "SELECT `nome` FROM `usuario`";
-    $resultado = $conn->query($sql);
+    ?>
+        <form method="POST" name="form" action="busca.php">
+            <br>
+            <label for="buscar">Buscar usuário: </label>
+            <input type="text" name="buscar">
+            <br>
+            <button type="submit" value="Send">Buscar</button>
+            <br>
+            <br>
+        </form>
+    <?php
 
-    echo 'Nome dos usuários cadastrados';
-    echo '<br/>';
+    $cmd = $pdo->prepare("SELECT nomeusuario, email FROM usuario");
+    $cmd->execute();
+    $resultado = $cmd->fetchAll(PDO::FETCH_ASSOC);
 
-    while($row = $resultado->fetch_array()) {
-        echo $row['nome'];
-        echo '<br/>';
+    for ($i=0; $i < count($resultado); $i++) { 
+        echo "Usuário: ".($i+1)."<br>";
+        foreach ($resultado[$i] as $key => $value) {
+            echo $key.": ".$value."<br>";
+        }
+        echo "<br>";
     }
     ?>
-    <button><a href="login.html">Voltar</a></button>
+        <button><a href="login.html">Voltar</a></button>
     <?php
 ?>

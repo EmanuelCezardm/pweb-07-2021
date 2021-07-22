@@ -1,12 +1,11 @@
 <?php
-    $hostname = "localhost";
-    $db = "pweb2";
+  try {
     $username = "root";
     $password = "";
 
-    $conn = new mysqli($hostname, $username, $password, $db);
-
-    if ($conn->connect_error) {
-      die("Conexão não realizada: " . $conn->connect_error);
-    }
+    $pdo = new PDO('mysql:dbname=pweb2;host=localhost', $username, $password);
+  } catch(PDOException $e) {
+    echo 'Conexão não realizada. Erro: ' . $e->getMessage();
+    exit();
+  }
 ?>

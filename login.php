@@ -5,26 +5,21 @@
         exit();
     }
 
-    $nick = mysqli_real_escape_string($conn, $_POST['nick']);
-    $senha = mysqli_real_escape_string($conn, $_POST['senha']);
+    $nick = $_POST['nick'];
+    $senha = $_POST['senha'];
 
-    //$sql = "SELECT `nomeusuario`, `senha` FROM `usuario` WHERE `nomeusuario`='".$nick."' and `senha`='".md5($senha)."'";
+    $cmd = $pdo->prepare("SELECT nomeusuario, senha FROM usuario WHERE nomeusuario = :nu and senha = :s");
 
-    $sql = "SELECT `nomeusuario`,`senha` FROM `usuario` WHERE `nomeusuario`='".$nick."' and `senha`='".md5($senha)."'";
+    $cmd->bindparam(":nu", $nick);
+    $cmd->bindValue(":s", md5($senha));
+    $cmd->execute();
 
-    $resultado = mysqli_query($conn, $sql);
-
-    $count = mysqli_num_rows($resultado);
-
-    if($count == 1) {
-        echo "Login realizado com sucesso";
-        header("Location: lista.php");
-    }else{
-        echo "Usuário ou senha incorretas.";
+    if($cmd->rowCount() == 0){
+        echo "Usuário ou senha incorreta.";
         ?>
-        <button><a href="login.html">Voltar</a></button>
+            <button><a href="login.html">Voltar</a></button>
         <?php
+    }else{
+        header("Location: lista.php");
     }
-
-    $conn->close();
 ?>
